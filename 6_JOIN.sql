@@ -129,19 +129,19 @@ HAVING goal.teamid = 'GER';
 
 -- 13. List every match with the goals scored by each team as shown. This will use "CASE WHEN" which has not been explained in any previous exercises.
 
--- NOTE: Not sure why LEFT JOIN is required here as it has not been introduced in the lessons yet.
+-- NOTE: Use LEFT JOIN in order to include games where neither team scored.
 
 SELECT mdate,
        team1,
        SUM(CASE
                WHEN teamid=team1 THEN 1
                ELSE 0
-           END) AS score1,
+           END) score1,
        team2,
        SUM(CASE
                WHEN teamid=team2 THEN 1
                ELSE 0
-           END) AS score2
+           END) score2
 FROM game
 LEFT JOIN goal ON id = matchid
 GROUP BY mdate,
