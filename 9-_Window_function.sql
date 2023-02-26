@@ -69,24 +69,17 @@ WHERE posn = 1;
 
 -- 6. Show how many seats for each party in Scotland in 2017.
 
-SELECT 
-      name,
-      confirmed,
-      RANK() OVER (ORDER BY confirmed DESC) rc,
-      deaths,
-      RANK() OVER (ORDER BY deaths DESC) rd
-FROM covid
-WHERE whn = '2020-04-20'
-ORDER BY confirmed DESC
+-- Find the winners as in the last question, but this time we want to count/group the winners by party
 
--- 7. Show the infect rate ranking for each country. Only include countries with a population of at least 10 million.
-
-SELECT world.name,
-       ROUND(100000*confirmed/population, 0) i_rate,
-       RANK() OVER (
-                    ORDER BY (confirmed/population)) AS i_rank
-FROM covid
-JOIN world ON covid.name=world.name
-WHERE whn = '2020-04-20'
-  AND population >= 10000000
-ORDER BY population DESC;
+SELECT party,
+      COUNT(constituency) AS num_seats
+FROM
+  (SELECT constituency,
+          party,
+          RANK() OVER (PARTITION BY constituency
+                       ORDER BY votes DESC) AS posn
+   FROM ge
+WHERE constituency LIKE 'S%'
+     AND yr = 2017 ) AS t1
+WHERE posn = 1
+GROUP BY party
